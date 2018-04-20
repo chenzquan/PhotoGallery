@@ -36,10 +36,7 @@ public class ThumbnailDownloader<T> extends HandlerThread{
 
 
 
-    public ThumbnailDownloader(Handler mResponseHandler) {
-        super(TAG);
-        this.mRequestHandler = mResponseHandler;
-    }
+
 
     @Override
     public boolean quit() {
@@ -53,9 +50,9 @@ public class ThumbnailDownloader<T> extends HandlerThread{
         if(url==null){
             mRequestMap.remove(target);
         }else{
-            mRequestMap.put(target,url);
+            mRequestMap.put(target,url);//做hash映射
             mRequestHandler.obtainMessage(MESSAGE_DOWNLOAD,target).sendToTarget();//将 这个Message放置在Looper消息队列的尾部
-         //   mRequestHandler.obtainMessage()
+
 
         }
 
@@ -99,9 +96,11 @@ public class ThumbnailDownloader<T> extends HandlerThread{
             mResponseHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if(mRequestMap.get(target)!=url || mHasQuit){
+                    if(mRequestMap.get(target)!=url ||
+                            mHasQuit){
                         return;
                     }
+
                     mRequestMap.remove(target);
                     mThumbnailDownloadListener.onThumbnailDownloaded(target,bitmap);
                 }
@@ -120,6 +119,13 @@ public class ThumbnailDownloader<T> extends HandlerThread{
     public void setmThumbnailDownloadListener(ThumbnailDownloadListener<T> listener){
         mThumbnailDownloadListener = listener;
     }
+
+
+    public ThumbnailDownloader(Handler mResponseHandler) {
+        super(TAG);
+        this.mResponseHandler = mResponseHandler;
+    }
+
 
     public void clearQueue(){
         mRequestHandler.removeMessages(MESSAGE_DOWNLOAD);

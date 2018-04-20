@@ -13,6 +13,8 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
@@ -61,6 +63,9 @@ public class PhotoGalleryFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+
+        setHasOptionsMenu(true);
+
         new FetchItemsTask().execute();
 
         Handler responseHandler = new Handler(); //创建Handler
@@ -120,8 +125,16 @@ public class PhotoGalleryFragment extends Fragment {
         protected List<GalleryItem> doInBackground(Void... params) {
             //                String result = new FlickFetchr().getUrlString("https://www.bignerdranch.com");
 //                Log.i(TAG,result);
-            return new FlickFetchr().fetchItems();
+          //  return new FlickFetchr().fetchItems();
             //
+
+            String query = "robot";
+
+            if(query == null){
+                return new FlickFetchr().fetchRecentPhotos();
+            }else{
+                return new FlickFetchr().searchPhotos(query);
+            }
         }
 
         @Override
@@ -168,7 +181,7 @@ public class PhotoGalleryFragment extends Fragment {
         //    Drawable placeHolder = getResources().getDrawable(R.drawable.bill_up_close);
          //   holder.bindGalleryItem(placeHolder);
 
-            mThumbnailDownloader.queueIhumbnail(holder,item.getmUrl());
+            mThumbnailDownloader.queueIhumbnail(holder,item.getmUrl());//下载图片
         }
 
         @Override
@@ -184,5 +197,9 @@ public class PhotoGalleryFragment extends Fragment {
         }
     }
 
-
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_photo_gallery,menu);
+    }
 }
